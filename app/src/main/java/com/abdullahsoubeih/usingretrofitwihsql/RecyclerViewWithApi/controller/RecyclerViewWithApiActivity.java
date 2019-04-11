@@ -6,12 +6,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,9 +18,7 @@ import com.abdullahsoubeih.usingretrofitwihsql.RecyclerViewWithApi.api.Service;
 import com.abdullahsoubeih.usingretrofitwihsql.RecyclerViewWithApi.model.Item;
 import com.abdullahsoubeih.usingretrofitwihsql.RecyclerViewWithApi.model.ItemResponse;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -35,21 +29,62 @@ import retrofit2.Response;
 public class RecyclerViewWithApiActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
+    private LinearLayoutManager linearLayoutManager;
+
     TextView Dissconnected;
     private Item item;
     ProgressDialog pd;
     private SwipeRefreshLayout swipeContainer;
 
 
+
+
+
+    ////////////////////////////// For RecyclerView with Timer ////////////////////////////////////
     private Timer timer;
 
+    //cursor to track current position of item visible in your Advertisement RecyclerView
+    int cursor = 0;
+
+    int itemCountOfAdvertisements;
+
+
     class AdvertisementsTimerTask extends TimerTask{
+
+        //this variable in timer task will basically hold count of advertisement images initially and made final to signify that it won't change during the activity screen
+        final int count ;
+
+        public AdvertisementsTimerTask(int count) {
+            this.count = count;
+        }
 
         @Override
         public void run() {
 
+            if (cursor < count){
+                //but since its a different thread thant main thread we should make it run on ui thread
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        //we can scroll to position using        linearLayoutManager.scrollToPosition(cursor);       as well
+
+                        recyclerView.scrollToPosition(cursor);
+                        cursor++;
+                    }
+                });
+            }
+
+            //check if last position has reached , then reset it to first position or 0th position
+            if (cursor >= count){
+                cursor = 0;
+            }
+
         }
     }
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
 
 
     @Override
@@ -78,9 +113,28 @@ public class RecyclerViewWithApiActivity extends AppCompatActivity {
         pd.setCancelable(false);
         pd.show();
 
+
+
         recyclerView = (RecyclerView)findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-        recyclerView.smoothScrollToPosition(0);
+        //there is possibility that user might interact with the recyclerView manually , so we need to set cursor variable accordingly for this purpose we need to keep track when user is interacting with recyclerView
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+
+                if (newState == RecyclerView.SCROLL_STATE_IDLE){
+                    //there is no method in recyclerView to identify last or first position after scroll
+                   cursor =  linearLayoutManager.findLastVisibleItemPosition();
+                }
+
+            }
+        });
+
+        //for this purpose we would need following linearLayoutManager set to recyclerView
+        linearLayoutManager = new LinearLayoutManager(RecyclerViewWithApiActivity.this);
+        linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+        recyclerView.setLayoutManager(linearLayoutManager);
+       // recyclerView.smoothScrollToPosition(0);
 
         loadJSON();
 
@@ -127,13 +181,34 @@ public class RecyclerViewWithApiActivity extends AppCompatActivity {
     }
 
 
+
+
+
+    ////////////////////////////// For RecyclerView with Timer ////////////////////////////////////
     @Override
     protected void onStart() {
         super.onStart();
+
+        // itemCountOfAdvertisements  = recyclerView.getAdapter().getItemCount();
+       // itemCountOfAdvertisements  = recyclerView.getChildCount();
+
+        itemCountOfAdvertisements = 29;
+
         //create a new instance of Timer when activity is going to start
         timer = new Timer();
 
-        //schedule or start timer , with 0 or no delay , and 
-        timer.schedule(new AdvertisementsTimerTask(),0,2*1000);
+        //schedule or start timer , with 0 or no delay , and period of 2000ms = 2sec
+        timer.schedule(new AdvertisementsTimerTask(itemCountOfAdvertisements),0,600);
     }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        //stop the timer in onStop of your activity
+        if (timer != null){
+            timer.cancel();
+        }
+    }
+    ////////////////////////////////////////////////////////////////////////////////////////////////
 }
