@@ -1,0 +1,9 @@
+Password: AbdullahSoubeih
+*****************************
+Alias:    RetrofitAppKey
+Password: AbdullahSoubeih
+Validity(years): 100
+*******************************
+Certificate:
+First and Last Name: Abdullah Soubeih
+Organizational Unit: Free Lancer
