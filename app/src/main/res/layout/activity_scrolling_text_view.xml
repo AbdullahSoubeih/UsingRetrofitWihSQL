@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:padding="16dp"
+android:orientation="vertical"
+tools:context=".RecyclerViewWithApi.ScrollTextView.ScrollingTextViewActivity">
+
+<TextView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="20dp"
+    android:layout_gravity="center_horizontal"
+    android:autoLink="web"
+    android:text="http://android-er.blogspot.com/"
+    android:textStyle="bold"/>
+
+<TextView
+    android:id="@+id/scrollingtext"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:textSize="40dp"
+    android:background="#D0D0D0"
+    android:text="http://android-er.blogspot.com/   http://android-er.blogspot.com/   http://android-er.blogspot.com/"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+    android:singleLine="true"
+    android:gravity="center"
+
+
+    android:scrollHorizontally="true"
+    android:ellipsize="marquee"
+    android:marqueeRepeatLimit ="@android:integer/config_longAnimTime"
+
+    android:drawableLeft="@drawable/load"/>
+
+
+
+
+
+</LinearLayout>

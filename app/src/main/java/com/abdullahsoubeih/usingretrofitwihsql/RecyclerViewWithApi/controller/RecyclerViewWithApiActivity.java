@@ -28,6 +28,10 @@ import retrofit2.Response;
 
 public class RecyclerViewWithApiActivity extends AppCompatActivity {
 
+    private List<Item> items;
+
+    private ItemAdapter itemAdapter;
+
     private RecyclerView recyclerView;
     private LinearLayoutManager linearLayoutManager;
 
@@ -35,6 +39,7 @@ public class RecyclerViewWithApiActivity extends AppCompatActivity {
     private Item item;
     ProgressDialog pd;
     private SwipeRefreshLayout swipeContainer;
+
 
 
 
@@ -152,9 +157,11 @@ public class RecyclerViewWithApiActivity extends AppCompatActivity {
                 call.enqueue(new Callback<ItemResponse>() {
                     @Override
                     public void onResponse(Call<ItemResponse> call, Response<ItemResponse> response) {
-                        List<Item> items = response.body().getItems();
+                        items = response.body().getItems();
+
                         if (items != null) {
-                            recyclerView.setAdapter(new ItemAdapter(getApplicationContext(), items));
+                            itemAdapter = new ItemAdapter(getApplicationContext(), items);
+                            recyclerView.setAdapter(itemAdapter);
                             recyclerView.smoothScrollToPosition(0);
                             swipeContainer.setRefreshing(false);
                             pd.hide();
@@ -190,15 +197,19 @@ public class RecyclerViewWithApiActivity extends AppCompatActivity {
         super.onStart();
 
         // itemCountOfAdvertisements  = recyclerView.getAdapter().getItemCount();
-       // itemCountOfAdvertisements  = recyclerView.getChildCount();
+          // itemCountOfAdvertisements  = recyclerView.getChildCount();
 
         itemCountOfAdvertisements = 29;
+
+      //  itemCountOfAdvertisements = itemAdapter.getItemCount();
 
         //create a new instance of Timer when activity is going to start
         timer = new Timer();
 
         //schedule or start timer , with 0 or no delay , and period of 2000ms = 2sec
-        timer.schedule(new AdvertisementsTimerTask(itemCountOfAdvertisements),0,600);
+        timer.schedule(new AdvertisementsTimerTask(itemCountOfAdvertisements),0,800);
+
+
     }
 
     @Override

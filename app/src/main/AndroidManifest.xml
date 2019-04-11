@@ -2,8 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.abdullahsoubeih.usingretrofitwihsql">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/retrofit_logo"
@@ -11,6 +9,11 @@
         android:roundIcon="@mipmap/retrofit_logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".RecyclerViewWithApi.ScrollTextView.ScrollingTextViewActivity">
+
+
+
+        </activity>
         <activity android:name=".RecyclerViewWithApi.controller.RecyclerViewWithApiActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -18,16 +21,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".RecyclerViewWithApi.controller.DetailActivity"
+        <activity
+            android:name=".RecyclerViewWithApi.controller.DetailActivity"
             android:parentActivityName=".RecyclerViewWithApi.controller.RecyclerViewWithApiActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".RecyclerViewWithApi.controller.RecyclerViewWithApiActivity"/>
+                android:value=".RecyclerViewWithApi.controller.RecyclerViewWithApiActivity" />
         </activity>
-
         <activity android:name=".RetrofitWithListView.Classes.MainActivity" />
-        <activity android:name=".RetrofitWithHTTPRequests.UsingHTTPRequestsActivity"></activity>
+        <activity android:name=".RetrofitWithHTTPRequests.UsingHTTPRequestsActivity" />
     </application>
+
+    <uses-permission android:name="android.permission.INTERNET" />
 
 </manifest>
