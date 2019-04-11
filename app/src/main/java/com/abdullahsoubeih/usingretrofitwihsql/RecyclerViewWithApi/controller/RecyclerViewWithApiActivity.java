@@ -1,11 +1,15 @@
 package com.abdullahsoubeih.usingretrofitwihsql.RecyclerViewWithApi.controller;
 
 import android.app.ProgressDialog;
+import android.graphics.drawable.Drawable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ImageSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -41,6 +45,9 @@ public class RecyclerViewWithApiActivity extends AppCompatActivity {
     private SwipeRefreshLayout swipeContainer;
 
 
+
+    //for scrolling textView
+    private TextView scrollingText;
 
 
 
@@ -119,6 +126,10 @@ public class RecyclerViewWithApiActivity extends AppCompatActivity {
         pd.show();
 
 
+        //for scrolling textView
+        scrollingTextView();
+
+
 
         recyclerView = (RecyclerView)findViewById(R.id.recyclerView);
         //there is possibility that user might interact with the recyclerView manually , so we need to set cursor variable accordingly for this purpose we need to keep track when user is interacting with recyclerView
@@ -142,6 +153,70 @@ public class RecyclerViewWithApiActivity extends AppCompatActivity {
        // recyclerView.smoothScrollToPosition(0);
 
         loadJSON();
+
+    }
+
+    private void scrollingTextView() {
+
+        scrollingText = (TextView)findViewById(R.id.scrollingtext);
+        scrollingText.setSelected(true);
+
+        try {
+            Client Client = new Client();
+            final Service apiService = Client.getClient().create(Service.class);
+            try {
+                // parameters.put("login", SearchText);
+                Call<ItemResponse> call = apiService.getItems();
+                //  Call<ItemResponse> call = apiService.getItems();
+                call.enqueue(new Callback<ItemResponse>() {
+                    @Override
+                    public void onResponse(Call<ItemResponse> call, Response<ItemResponse> response) {
+                        items = response.body().getItems();
+
+                        SpannableString ss;
+                        Drawable d = null;
+
+                        if (items != null) {
+                            for (int i = 0; i< items.size(); i++){
+                               // scrollingText.append(items.get(i).getLogin() + "  ");
+
+                                //String s = items.get(i).getLogin() + "  ";
+
+
+
+                                ss = new SpannableString(items.get(i).getLogin() + "  ");
+                                if (i%2 == 0){
+                                    d = getResources().getDrawable(R.drawable.ic_arrow_up);
+                                }else {
+                                    d = getResources().getDrawable(R.drawable.ic_arrow_down);
+                                }
+                                 //d = getResources().getDrawable(R.drawable.load);
+                                d.setBounds(0, 0, d.getIntrinsicWidth(), d.getIntrinsicHeight());
+                                ImageSpan span = new ImageSpan(d, ImageSpan.ALIGN_BASELINE);
+                                ss.setSpan(span, 0, 3, Spannable.SPAN_INCLUSIVE_EXCLUSIVE);
+                                scrollingText.append(ss);
+
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ItemResponse> call, Throwable t) {
+                        Log.d("Error", t.getMessage());
+                        Toast.makeText(RecyclerViewWithApiActivity.this, "Error Fetching Data !", Toast.LENGTH_SHORT).show();
+
+                        pd.hide();
+                    }
+                });
+            } catch (Exception e) {
+                Log.d("Error", e.getMessage());
+                Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
+            }
+
+
+
+
+        }catch (Exception e){}
 
     }
 
@@ -186,8 +261,6 @@ public class RecyclerViewWithApiActivity extends AppCompatActivity {
 
         }catch (Exception e){}
     }
-
-
 
 
 
